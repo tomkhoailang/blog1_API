@@ -43,6 +43,7 @@ const uploadImage = (options) => {
     },
     {
       name: 'userAvatar',
+      maxCount: 1,
     },
   ]);
 };
@@ -52,11 +53,13 @@ const handleUploadImage = (req, res, next, options) => {
       if (err) {
         return next(new AppError(`Error uploading file: ${err}`, 400));
       }
+      console.log(req);
       let data = {};
-      if (options === 'users')
+      if (options === 'users') {
         if (req.files['userAvatar'] && req.files['userAvatar'].length > 0) {
           data.photo = req.files['userAvatar'][0].filename;
         }
+      }
       if (options === 'posts') {
         data = JSON.parse(req.body.data);
         if (req.files['coverImage'] && req.files['coverImage'].length > 0) {

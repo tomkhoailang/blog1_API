@@ -15,7 +15,13 @@ router
     postingController.createPosting
   )
   .get(postingController.getAllPosting);
-
+router
+  .route('/activate')
+  .post(
+    authController.protect,
+    authController.allowedRoles('manager'),
+    postingController.activeAllPosting
+  );
 router
   .route('/:id')
   .get(postingController.getPosting)
@@ -30,5 +36,11 @@ router
     postingController.handleUpdatePosting,
     postingController.updatePosting
   );
-
+router
+  .route('/:id/activate')
+  .post(
+    authController.protect,
+    authController.allowedRoles('manager'),
+    postingController.activeOnePosting
+  );
 module.exports = router;

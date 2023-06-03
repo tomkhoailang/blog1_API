@@ -57,7 +57,7 @@ const postingSchema = new mongoose.Schema(
   }
 );
 postingSchema.pre(/^find/, function (next) {
-  this.select('-authors._id -__v');
+  this.select('-__v');
   this.populate({
     path: 'authors.authorId',
     select: 'name photo email',

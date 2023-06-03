@@ -45,8 +45,41 @@ const handleUpdatePosting = catchAsync(async (req, res, next) => {
   );
   req.body = filteredObj;
   req.body.authors = modifyAuthors(req.body.authors, req.user.id);
+  req.body.updateDate = Date.now();
   next();
 });
+const activeOnePosting = catchAsync(async (req, res, next) => {
+  let currentPosting = await Posting.findByIdAndUpdate(
+    req.params.id,
+    {
+      status: 'active',
+    },
+    { new: true }
+  );
+  console.log(currentPosting);
+  if (!currentPosting) {
+    return next(new AppError('Cannot find posting with the current id', 404));
+  }
+  res.status(201).json({
+    status: 'success',
+    message: 'The posting is active',
+    posting: currentPosting,
+  });
+});
+const activeAllPosting = catchAsync(async (req, res, next) => {
+  let newActivePosting = await Posting.updateMany(
+    { status: 'pending' },
+    { status: 'active' }
+  );
+  if (!newActivePosting) {
+    return next(new AppError('There is no pending postings', 404));
+  }
+  res.status(201).json({
+    status: 'success',
+    message: 'All postings is active',
+  });
+});
+
 const createPosting = factory.createOne(Posting);
 const getAllPosting = factory.getAll(Posting);
 const getPosting = factory.getOne(Posting);
@@ -59,6 +92,8 @@ module.exports = {
   getAllPosting,
   deletePosting,
   updatePosting,
+  activeOnePosting,
   createPostingMiddleware,
   handleUpdatePosting,
+  activeAllPosting,
 };

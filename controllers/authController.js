@@ -65,6 +65,14 @@ const protect = catchAsync(async (req, res, next) => {
   req.user = user;
   next();
 });
+const allowedRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return next(new AppError('You do not have permission to access this'));
+    }
+    next();
+  };
+};
 const forgotPassword = catchAsync(async (req, res, next) => {
   const email = req.body.email;
   if (!email || !validator.isEmail(email)) {
@@ -189,6 +197,7 @@ module.exports = {
   signup,
   login,
   protect,
+  allowedRoles,
   forgotPassword,
   resetPassword,
   changePassword,

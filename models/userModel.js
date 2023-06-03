@@ -76,6 +76,9 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+userSchema.pre('find', function () {
+  this.select('name photo email');
+});
 userSchema.methods.comparePassword = function (inputPassword, currentPassword) {
   return bcrypt.compare(inputPassword, currentPassword);
 };

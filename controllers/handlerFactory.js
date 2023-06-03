@@ -8,6 +8,11 @@ const getAll = (Model) =>
     if (req.params.postingId) {
       currParamId = { posting: req.params.postingId };
     }
+    if (Model.modelName.toLowerCase() === 'posting') {
+      if (!req.user || req.user.role !== 'manager') {
+        currParamId.status = { $ne: 'pending' };
+      }
+    }
     const modifiedQuery = new APIFeatures(Model.find(currParamId), req.query)
       .search()
       .filter()
@@ -59,9 +64,6 @@ const deleteOne = (Model) =>
   });
 const updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
-    if (Model.modelName.toLowerCase() === 'posting') {
-      req.body.updateDate = Date.now();
-    }
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
